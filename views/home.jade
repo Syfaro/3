@@ -1,0 +1,18 @@
+extends layout
+
+block header
+    style.
+        .top-space {
+            margin-top: 20px;
+        }
+
+block body
+    .row
+        .col-sm-12
+            h1 :3 Counter
+
+            h3 Ever wonder what percentage of your Tweets contain ":3"? Find out now!
+
+    .row.top-space
+        .col-sm-12
+            a(href='/auth', class='btn btn-lg btn-primary') Find out »

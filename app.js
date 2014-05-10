@@ -19,9 +19,9 @@ var passport = require('passport'),
 var Twit = require('twit');
 
 // app functions
-var Users = require('./lib/users'),
-    Stats = require('./lib/stats'),
-    Tweets = require('./lib/tweets');
+var users = require('./lib/users'),
+    stats = require('./lib/stats'),
+    tweets = require('./lib/tweets');
 
 // database
 var mongoose = require('mongoose');
@@ -63,10 +63,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(function (req, res, next) {
-    next();
-});
-
 // routes
 app.use(require('./routes/main'));
 app.use('/u', require('./routes/user'));
@@ -77,7 +73,11 @@ passport.use(new TwitterStrategy({
     consumerSecret: config.twitter.consumer_secret,
     callbackURL: config.twitter.callback
 }, function (token, tokenSecret, profile, done) {
-    //TODO: handle user login or creation
+    users.findOrCreate({
+        profile: profile,
+        token: token,
+        tokenSecret: tokenSecret
+    }, done);
 }));
 
 passport.serializeUser(function (user, done) {

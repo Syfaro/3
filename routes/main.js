@@ -4,12 +4,12 @@
 
 var express = require('express');
 
-var isAuthenticated = require('../auth');
+var isAuthenticated = require('../lib/auth');
 
 var routes = express.Router();
 
 routes.get('/', function (req, res) {
-    //TODO: explanation thingy
+    res.render('home');
 });
 
 routes.get('/3', isAuthenticated, function (req, res) {
