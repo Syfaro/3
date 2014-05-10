@@ -20,7 +20,6 @@ var Twit = require('twit');
 
 // app functions
 var users = require('./lib/users'),
-    stats = require('./lib/stats'),
     tweets = require('./lib/tweets');
 
 // database

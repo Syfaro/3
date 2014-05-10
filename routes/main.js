@@ -27,19 +27,25 @@ routes.get('/3', isAuthenticated, function (req, res) {
 });
 
 routes.get('/start', isAuthenticated, function (req, res) {
-    res.json('Started');
-
     Progress.findOne({
         twitter_handle: req.user.twitter_handle,
         owner_id: req.user._id
     }, function (err, progress) {
+        console.log('Got start request from ' + req.user.twitter_handle);
+
         if (!progress) {
+            console.log('Has not already requested this user, creating progress object');
             progress = new Progress({
                 twitter_handle: req.user.twitter_handle,
                 loading: true,
                 owner_id: req.user._id
             });
+        } else if (progress.loading === true) {
+            console.log('Already requesting this user');
+            res.json('Started');
+            return;
         } else {
+            console.log('Already requested, but stale information');
             progress.loading = true;
         }
 
@@ -48,6 +54,8 @@ routes.get('/start', isAuthenticated, function (req, res) {
                 console.error(err);
                 return;
             }
+
+            res.json('Started');
 
             tweetHelper.getAllTweets(req.twit, req.user.twitter_handle, function (count) {
                 Progress.findOne({
@@ -65,16 +73,11 @@ routes.get('/start', isAuthenticated, function (req, res) {
 
                 var stats = tweetHelper.handleTweets(tweets);
 
-                Progress.findOne({
-                    twitter_handle: req.user.twitter_handle,
-                    owner_id: req.user._id
-                }, function (err, progress) {
-                    progress.gotten = stats.total;
-                    progress.contains = stats.count;
-                    progress.loading = false;
+                progress.gotten = stats.total;
+                progress.contains = stats.count;
+                progress.loading = false;
 
-                    progress.save();
-                });
+                progress.save();
             });
         });
     });

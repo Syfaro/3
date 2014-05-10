@@ -3,13 +3,19 @@ extends layout
 block body
     .row
         .col-md-12
-            h1 Let's get started!
+            h1#top-message Let's get started!
 
     .row
         .col-md-12
-            span#status Loading...
+            div#status Loading...
+
+    .row
+        .col-md-12
+            h1#large
 
     script.
+        var interval;
+
         var makeRequest = function (url, done) {
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url);
@@ -30,7 +36,43 @@ block body
             xhr.send();
         };
 
-        var start = function () {
-            makeRequest('/start');
+        makeRequest('/start', function () {
+            interval = setInterval(updateProgress, 2000);
+            updateProgress();
+        });
+
+        var displayTemplate = '<div>TMPL_DATA</div>';
+        var loadingTemplate = '<div>We\'ve currently got TMPL_TWEETS Tweets loaded for TMPL_NAME!</div>';
+        var doneTemplate = '<div>Loaded TMPL_TWEETS Tweets for TMPL_NAME with a total of TMPL_COUNT ":3"s!';
+        var largeTemplate = 'TMPL_PERCENT% of your Tweets contain a ":3"!';
+        var updateProgress = function () {
+            makeRequest('/status', function (err, status) {
+                if(!status.loading) {
+                    clearInterval(interval);
+                }
+
+                console.log(status);
+
+                var displayMessage = displayTemplate;
+
+                var statusMessage;
+
+                if (status.loading) {
+                    statusMessage = loadingTemplate.replace('TMPL_TWEETS', status.gotten);
+                    statusMessage = statusMessage.replace('TMPL_NAME', status.twitter_handle);
+                } else {
+                    statusMessage = doneTemplate.replace('TMPL_TWEETS', status.gotten);
+                    statusMessage = statusMessage.replace('TMPL_NAME', status.twitter_handle);
+                    statusMessage = statusMessage.replace('TMPL_COUNT', status.contains);
+
+                    var percent = Math.round((status.contains / status.gotten) * 10000) / 100;
+
+                    document.getElementById('top-message').innerHTML = 'Check your results on <a href="/leaderboard">the leaderboard</a>!';
+                    document.getElementById('large').innerHTML = largeTemplate.replace('TMPL_PERCENT', percent);
+                }
+
+                displayMessage = displayMessage.replace('TMPL_DATA', statusMessage);
+
+                document.getElementById('status').innerHTML = displayMessage;
+            });
         };
-        start();
