@@ -32,6 +32,9 @@ var app = express();
 // set up database
 mongoose.connect('mongodb://localhost/3');
 
+// database models for passport
+var user = require('./models/user');
+
 // use redis or fakeredis, depending on envronment
 var client;
 if (process.env.NODE_ENV === 'production') {
@@ -81,11 +84,11 @@ passport.use(new TwitterStrategy({
 }));
 
 passport.serializeUser(function (user, done) {
-    done(null, user.id);
+    done(null, user._id);
 });
 
 passport.deserializeUser(function (id, done) {
-    //TODO: handle getting user by session token
+    user.findById(id, done);
 });
 
 app.get('/auth', passport.authenticate('twitter'));
