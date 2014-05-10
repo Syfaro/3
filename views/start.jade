@@ -9,9 +9,11 @@ block body
         .col-md-12
             div#status Loading...
 
-    .row
+    .row.unhide.hidden
         .col-md-12
             h1#large
+
+            div#share
 
     script.
         var interval;
@@ -42,7 +44,7 @@ block body
         });
 
         var displayTemplate = '<div>TMPL_DATA</div>';
-        var loadingTemplate = '<div>We\'ve currently got TMPL_TWEETS Tweets loaded for TMPL_NAME!</div>';
+        var loadingTemplate = '<div>We\'ve currently got TMPL_TWEETS Tweets loaded for TMPL_NAME</div>';
         var doneTemplate = '<div>Loaded TMPL_TWEETS Tweets for TMPL_NAME with a total of TMPL_COUNT ":3"s!';
         var largeTemplate = 'TMPL_PERCENT% of your Tweets contain a ":3"!';
         var updateProgress = function () {
@@ -69,6 +71,16 @@ block body
 
                     document.getElementById('top-message').innerHTML = 'Check your results on <a href="/leaderboard">the leaderboard</a>!';
                     document.getElementById('large').innerHTML = largeTemplate.replace('TMPL_PERCENT', percent);
+                    document.getElementById('share').innerHTML = '<a id="share" href="https://twitter.com/share" data-url="http://3.syfaro.net" data-via="Syfaro" data-lang="en" data-count="horizontal" class="twitter-share-button" data-text=\'TMPL_PERCENT% of my Tweets contain a ":3" (TMPL_COUNT of TMPL_TOTAL) Check yours at\'>'.replace('TMPL_PERCENT', percent).replace('TMPL_COUNT', status.contains).replace('TMPL_TOTAL', status.gotten);
+
+                    console.log(document.getElementById('share').innerHTML);
+
+                    var hiddenElements = document.getElementsByClassName('unhide');
+                    for (var i = 0; i < hiddenElements.length; i++) {
+                        hiddenElements[i].classList.remove('hidden');
+                    }
+
+                    twttr.widgets.load()
                 }
 
                 displayMessage = displayMessage.replace('TMPL_DATA', statusMessage);
@@ -76,3 +88,6 @@ block body
                 document.getElementById('status').innerHTML = displayMessage;
             });
         };
+
+    script.
+        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
