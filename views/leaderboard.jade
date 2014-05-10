@@ -25,11 +25,12 @@ block body
 
                 tbody
                     each person, i in stats
-                        tr
+                        if i < 11
+                            tr
                             td= i + 1
-                            td
-                                a(href='https://twitter.com/' + person.twitter_handle)= person.twitter_handle
-                            td= Math.round(person.percent * 10000) / 100 + '%'
+                                td
+                                    a(href='https://twitter.com/' + person.twitter_handle)= person.twitter_handle
+                                td= Math.round(person.percent * 10000) / 100 + '%'
 
     script(src='//assets.nyw.li/js/Chart.min.js')
     script.
