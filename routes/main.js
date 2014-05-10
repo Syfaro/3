@@ -28,6 +28,8 @@ routes.get('/start', isAuthenticated, function (req, res) {
 
     req.session.save();
 
+    res.json(req.session.twits);
+
     tweets.getAllTweets(req.twit, req.user.twitter_handle, function (count) {
         req.session.twits.status = 'Loading';
         req.session.twits.count = count;
