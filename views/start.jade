@@ -1,0 +1,36 @@
+extends layout
+
+block body
+    .row
+        .col-md-12
+            h1 Let's get started!
+
+    .row
+        .col-md-12
+            span#status Loading...
+
+    script.
+        var makeRequest = function (url, done) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url);
+
+            if (done === undefined) {
+                done = function() {}
+            }
+
+            xhr.onerror = function () {
+                alert('Network error!');
+                return done(new Error('Network error'));
+            };
+
+            xhr.onload = function () {
+                return done(null, JSON.parse(xhr.responseText));
+            };
+
+            xhr.send();
+        };
+
+        var start = function () {
+            makeRequest('/start');
+        };
+        start();
