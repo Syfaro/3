@@ -9,7 +9,6 @@
   "author": "Syfaro",
   "license": "CC0",
   "dependencies": {
-    "memoria": "~0.1.0",
     "morgan": "~1.0.1",
     "cookie-parser": "~1.0.1",
     "express-session": "~1.0.4",
