@@ -1,0 +1,25 @@
+{
+  "name": "3",
+  "version": "0.0.1",
+  "description": "Counts \":3\"s in your Tweets",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Syfaro",
+  "license": "CC0",
+  "dependencies": {
+    "memoria": "~0.1.0",
+    "morgan": "~1.0.1",
+    "cookie-parser": "~1.0.1",
+    "express-session": "~1.0.4",
+    "passport": "~0.2.0",
+    "body-parser": "~1.0.2",
+    "passport-twitter": "~1.0.2",
+    "connect-redis": "~2.0.0",
+    "twit": "~1.1.15",
+    "express": "~4.1.2",
+    "redis": "~0.10.1",
+    "fakeredis": "~0.2.0"
+  }
+}
