@@ -11,6 +11,10 @@ var routes = express.Router();
 var tweetHelper = require('../lib/tweets');
 
 routes.get('/', function (req, res) {
+    if (req.isAuthenticated()) {
+        return res.redirect('/3');
+    }
+
     res.render('home');
 });
 
