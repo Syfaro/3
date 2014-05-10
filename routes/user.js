@@ -13,6 +13,14 @@ var tweetHelper = require('../lib/tweets');
 var Progress = require('../models/progress'),
     Stat = require('../models/stat');
 
+routes.get('/', isAuthenticated, function (req, res) {
+    if (req.query.username) {
+        return res.redirect('/u/' + req.query.username);
+    }
+
+    res.redirect('/');
+});
+
 routes.get('/:username', isAuthenticated, function (req, res) {
     res.render('start', {
         user: req.user,

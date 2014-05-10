@@ -15,6 +15,14 @@ block body
 
             div#share
 
+    .row
+        .col-md-12
+            h3 Check someone else's percentage!
+            form.form-inline(method='GET', action='/u/')
+                .form-group
+                    input.form-control(type='text', name='username')
+                button.btn.btn-default(type='submit') Check
+
     if locals.username
         script.
             var username = '#{locals.username}';
@@ -66,6 +74,8 @@ block body
             var loadingTemplate = '<div>We\'ve currently got TMPL_TWEETS Tweets loaded for TMPL_NAME</div>';
             var doneTemplate = '<div>Loaded TMPL_TWEETS Tweets for TMPL_NAME with a total of TMPL_COUNT ":3"s!';
             var largeTemplate = 'TMPL_PERCENT% of your Tweets contain a ":3"!';
+            var topTemplate = 'Check your results on <a href="/leaderboard">the leaderboard</a>!';
+            var tweetTemplate = '<a id="share" href="https://twitter.com/share" data-url="http://3.syfaro.net" data-via="Syfaro" data-lang="en" data-count="horizontal" class="twitter-share-button" data-text=\'TMPL_PERCENT% of my Tweets contain a ":3" (TMPL_COUNT of TMPL_TOTAL) Check yours at\'>';
 
     else
         script.
@@ -73,6 +83,8 @@ block body
             var loadingTemplate = '<div>We\'ve currently got TMPL_TWEETS Tweets loaded for TMPL_NAME</div>';
             var doneTemplate = '<div>Loaded TMPL_TWEETS Tweets for TMPL_NAME with a total of TMPL_COUNT ":3"s!';
             var largeTemplate = 'TMPL_PERCENT% of TMPL_NAME\'s Tweets contain a ":3"!';
+            var topTemplate = '';
+            var tweetTemplate = '<a id="share" href="https://twitter.com/share" data-url="http://3.syfaro.net" data-via="Syfaro" data-lang="en" data-count="horizontal" class="twitter-share-button" data-text="TMPL_PERCENT% of @TMPL_NAME\'s Tweets contain a &quot;:3&quot; (TMPL_COUNT of TMPL_TOTAL) Check yours at">';
 
     script.
         var updateProgress = function () {
@@ -101,9 +113,9 @@ block body
 
                     var percent = Math.round((status.contains / status.gotten) * 10000) / 100;
 
-                    document.getElementById('top-message').innerHTML = 'Check your results on <a href="/leaderboard">the leaderboard</a>!';
+                    document.getElementById('top-message').innerHTML = topTemplate;
                     document.getElementById('large').innerHTML = largeTemplate.replace('TMPL_PERCENT', percent).replace('TMPL_NAME', status.twitter_handle);
-                    document.getElementById('share').innerHTML = '<a id="share" href="https://twitter.com/share" data-url="http://3.syfaro.net" data-via="Syfaro" data-lang="en" data-count="horizontal" class="twitter-share-button" data-text=\'TMPL_PERCENT% of my Tweets contain a ":3" (TMPL_COUNT of TMPL_TOTAL) Check yours at\'>'.replace('TMPL_PERCENT', percent).replace('TMPL_COUNT', status.contains).replace('TMPL_TOTAL', status.gotten);
+                    document.getElementById('share').innerHTML = tweetTemplate.replace('TMPL_PERCENT', percent).replace('TMPL_COUNT', status.contains).replace('TMPL_TOTAL', status.gotten).replace('TMPL_NAME', status.twitter_handle);
 
                     var hiddenElements = document.getElementsByClassName('unhide');
                     for (var i = 0; i < hiddenElements.length; i++) {
