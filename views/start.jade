@@ -15,6 +15,17 @@ block body
 
             div#share
 
+    if locals.username
+        script.
+            var username = '#{locals.username}';
+            var startPath = '/u/start/' + username;
+            var statusPath = '/u/status/' + username;
+
+    else
+        script.
+            var startPath = '/start';
+            var statusPath = '/status';
+
     script.
         var interval;
 
@@ -44,17 +55,28 @@ block body
             xhr.send();
         };
 
-        makeRequest('/start', function () {
+        makeRequest(startPath, function () {
             interval = setInterval(updateProgress, 2000);
             updateProgress();
         });
 
-        var displayTemplate = '<div>TMPL_DATA</div>';
-        var loadingTemplate = '<div>We\'ve currently got TMPL_TWEETS Tweets loaded for TMPL_NAME</div>';
-        var doneTemplate = '<div>Loaded TMPL_TWEETS Tweets for TMPL_NAME with a total of TMPL_COUNT ":3"s!';
-        var largeTemplate = 'TMPL_PERCENT% of your Tweets contain a ":3"!';
+    if !locals.username
+        script.
+            var displayTemplate = '<div>TMPL_DATA</div>';
+            var loadingTemplate = '<div>We\'ve currently got TMPL_TWEETS Tweets loaded for TMPL_NAME</div>';
+            var doneTemplate = '<div>Loaded TMPL_TWEETS Tweets for TMPL_NAME with a total of TMPL_COUNT ":3"s!';
+            var largeTemplate = 'TMPL_PERCENT% of your Tweets contain a ":3"!';
+
+    else
+        script.
+            var displayTemplate = '<div>TMPL_DATA</div>';
+            var loadingTemplate = '<div>We\'ve currently got TMPL_TWEETS Tweets loaded for TMPL_NAME</div>';
+            var doneTemplate = '<div>Loaded TMPL_TWEETS Tweets for TMPL_NAME with a total of TMPL_COUNT ":3"s!';
+            var largeTemplate = 'TMPL_PERCENT% of TMPL_NAME\'s Tweets contain a ":3"!';
+
+    script.
         var updateProgress = function () {
-            makeRequest('/status', function (err, status) {
+            makeRequest(statusPath, function (err, status) {
                 if (err) {
                     clearInterval(interval);
                     console.error(err);
@@ -80,7 +102,7 @@ block body
                     var percent = Math.round((status.contains / status.gotten) * 10000) / 100;
 
                     document.getElementById('top-message').innerHTML = 'Check your results on <a href="/leaderboard">the leaderboard</a>!';
-                    document.getElementById('large').innerHTML = largeTemplate.replace('TMPL_PERCENT', percent);
+                    document.getElementById('large').innerHTML = largeTemplate.replace('TMPL_PERCENT', percent).replace('TMPL_NAME', status.twitter_handle);
                     document.getElementById('share').innerHTML = '<a id="share" href="https://twitter.com/share" data-url="http://3.syfaro.net" data-via="Syfaro" data-lang="en" data-count="horizontal" class="twitter-share-button" data-text=\'TMPL_PERCENT% of my Tweets contain a ":3" (TMPL_COUNT of TMPL_TOTAL) Check yours at\'>'.replace('TMPL_PERCENT', percent).replace('TMPL_COUNT', status.contains).replace('TMPL_TOTAL', status.gotten);
 
                     var hiddenElements = document.getElementsByClassName('unhide');
