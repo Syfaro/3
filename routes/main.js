@@ -115,7 +115,7 @@ routes.get('/status', isAuthenticated, function (req, res) {
 });
 
 routes.get('/leaderboard', function (req, res) {
-    Stat.find().limit(10).exec(function (err, stats) {
+    Stat.find(function (err, stats) {
         stats.sort(function (a, b) {
             return b.percent - a.percent;
         });

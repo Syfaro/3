@@ -33,7 +33,7 @@ block body
 
     script(src='//assets.nyw.li/js/Chart.min.js')
     script.
-        var stats = JSON.parse('!{JSON.stringify(stats)}');
+        var stats = JSON.parse('!{JSON.stringify(stats)}').slice(0, 10);
         var data = {
             labels: [],
             datasets: [{
