@@ -53,7 +53,7 @@ app.set('view engine', 'jade');
 app.enable('trust proxy');
 
 // express middleware
-app.use(morgan('short'));
+app.use(morgan((process.env.NODE_ENV === 'production') ? 'default' : 'dev'));
 app.use(cookieParser());
 app.use(bodyParser());
 app.use(session({
