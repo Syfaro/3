@@ -32,7 +32,8 @@ var app = express();
 mongoose.connect('mongodb://localhost/3');
 
 // database models for passport
-var user = require('./models/user');
+var User = require('./models/user'),
+    Progress = require('./models/progress');
 
 // use redis or fakeredis, depending on envronment
 var client;
@@ -87,7 +88,7 @@ passport.serializeUser(function (user, done) {
 });
 
 passport.deserializeUser(function (id, done) {
-    user.findById(id, done);
+    User.findById(id, done);
 });
 
 app.get('/auth', passport.authenticate('twitter'));
@@ -95,6 +96,9 @@ app.get('/auth/callback', passport.authenticate('twitter', {
     successRedirect: '/3',
     failureRedirect: '/auth'
 }));
+
+// empty users db in case restart killed while working
+Progress.remove().exec();
 
 app.listen(config.express.port, function () {
     console.log('Started 3 on ' + config.express.port);

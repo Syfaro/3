@@ -54,3 +54,5 @@ block body
             new Chart(ctx).Bar(data);
         };
         makeGraph();
+
+        window.addEventListener('resize', makeGraph);
