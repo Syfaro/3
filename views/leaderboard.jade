@@ -1,0 +1,51 @@
+extends layout
+
+block body
+    .row
+        .col-sm-12
+            h1 :3 Leaderboard
+
+    .row#content-body
+        .col-md-12.hidden-mobile
+            canvas#graph(height='400px')
+
+    .row
+        .col-sm-12
+            table.table.table-hover
+                thead
+                    tr
+                        th Rank
+                        th Name
+                        th Percentage
+
+                tbody
+                    each person, i in stats
+                        tr
+                            td= i + 1
+                            td
+                                a(href='https://twitter.com/' + person.twitter_handle)= person.twitter_handle
+                            td= Math.round(person.percent * 10000) / 100 + '%'
+
+    script(src='//assets.nyw.li/js/Chart.min.js')
+    script.
+        var stats = JSON.parse('!{JSON.stringify(stats)}').slice(0, 20);
+        var data = {
+            labels: [],
+            datasets: [{
+                fillColor: 'rgba(151,187,205,0.5)',
+                strokeColor: 'rgba(151,187,205,1)',
+                data: []
+            }]
+        };
+
+        for (var i = 0; i < stats.length; i++) {
+            data.labels.push(stats[i].twitter_handle);
+            data.datasets[0].data.push((stats[i].contains / stats[i].total_tweets) * 100);
+        }
+
+        var makeGraph = function () {
+            document.getElementById('graph').width = document.getElementById('content-body').offsetWidth;
+            var ctx = document.getElementById('graph').getContext('2d');
+            new Chart(ctx).Bar(data);
+        };
+        makeGraph();

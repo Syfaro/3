@@ -10,6 +10,10 @@ var StatSchema = new mongoose.Schema({
     contains: Number
 });
 
+StatSchema.virtual('percent').get(function () {
+    return this.contains / this.total_tweets;
+});
+
 var Stat = mongoose.model('Stat', StatSchema);
 
 module.exports = Stat;

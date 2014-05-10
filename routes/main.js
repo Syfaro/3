@@ -114,6 +114,18 @@ routes.get('/status', isAuthenticated, function (req, res) {
     });
 });
 
+routes.get('/leaderboard', function (req, res) {
+    Stat.find(function (err, stats) {
+        stats.sort(function (a, b) {
+            return b.percent - a.percent;
+        });
+
+        res.render('leaderboard', {
+            stats: stats
+        });
+    });
+});
+
 routes.get('/logout', isAuthenticated, function (req, res) {
     req.logout();
     res.redirect('/');
