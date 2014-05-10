@@ -32,6 +32,12 @@ block body
             };
 
             xhr.onload = function () {
+                try {
+                    JSON.parse(xhr.responseText);
+                } catch (e) {
+                    return done(e);
+                }
+
                 return done(null, JSON.parse(xhr.responseText));
             };
 
@@ -49,11 +55,15 @@ block body
         var largeTemplate = 'TMPL_PERCENT% of your Tweets contain a ":3"!';
         var updateProgress = function () {
             makeRequest('/status', function (err, status) {
+                if (err) {
+                    clearInterval(interval);
+                    console.error(err);
+                    alert('Something broke!');
+                }
+
                 if(!status.loading) {
                     clearInterval(interval);
                 }
-
-                console.log(status);
 
                 var displayMessage = displayTemplate;
 
@@ -72,8 +82,6 @@ block body
                     document.getElementById('top-message').innerHTML = 'Check your results on <a href="/leaderboard">the leaderboard</a>!';
                     document.getElementById('large').innerHTML = largeTemplate.replace('TMPL_PERCENT', percent);
                     document.getElementById('share').innerHTML = '<a id="share" href="https://twitter.com/share" data-url="http://3.syfaro.net" data-via="Syfaro" data-lang="en" data-count="horizontal" class="twitter-share-button" data-text=\'TMPL_PERCENT% of my Tweets contain a ":3" (TMPL_COUNT of TMPL_TOTAL) Check yours at\'>'.replace('TMPL_PERCENT', percent).replace('TMPL_COUNT', status.contains).replace('TMPL_TOTAL', status.gotten);
-
-                    console.log(document.getElementById('share').innerHTML);
 
                     var hiddenElements = document.getElementsByClassName('unhide');
                     for (var i = 0; i < hiddenElements.length; i++) {

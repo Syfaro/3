@@ -10,7 +10,8 @@ var routes = express.Router();
 
 var tweetHelper = require('../lib/tweets');
 
-var Progress = require('../models/progress');
+var Progress = require('../models/progress'),
+    Stat = require('../models/stat');
 
 routes.get('/', function (req, res) {
     if (req.isAuthenticated()) {
@@ -78,6 +79,23 @@ routes.get('/start', isAuthenticated, function (req, res) {
                 progress.loading = false;
 
                 progress.save();
+
+                Stat.findOne({
+                    twitter_handle: req.user.twitter_handle
+                }, function (err, stat) {
+                    if (!stat) {
+                        new Stat({
+                            twitter_handle: req.user.twitter_handle,
+                            total_tweets: stats.total,
+                            contains: stats.count
+                        }).save();
+                    } else {
+                        stat.total_tweets = stats.total;
+                        stat.contains = stats.count;
+
+                        stat.save();
+                    }
+                });
             });
         });
     });
