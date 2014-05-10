@@ -8,7 +8,7 @@ var isAuthenticated = require('../lib/auth');
 
 var routes = express.Router();
 
-var tweets = require('../lib/tweets');
+var tweetHelper = require('../lib/tweets');
 
 routes.get('/', function (req, res) {
     res.render('home');
@@ -30,13 +30,26 @@ routes.get('/start', isAuthenticated, function (req, res) {
 
     res.json(req.session.twits);
 
-    tweets.getAllTweets(req.twit, req.user.twitter_handle, function (count) {
-        req.session.twits.status = 'Loading';
-        req.session.twits.count = count;
+    tweetHelper.getAllTweets(req.twit, req.user.twitter_handle, function (count) {
+        req.session.twits = {
+            complete: false,
+            message: 'Loading!',
+            count: count
+        };
 
         req.session.save();
     }, function (err, tweets) {
-        var stats = tweets.handleTweets(tweets);
+        if (err) {
+            console.error(err);
+            req.session.twits = {
+                complete: false,
+                error: true,
+                status: 'Error!'
+            };
+            return req.session.save();
+        }
+
+        var stats = tweetHelper.handleTweets(tweets);
 
         req.session.twits = {
             complete: true,
