@@ -19,18 +19,18 @@ var passport = require('passport'),
 var Twit = require('twit');
 
 // app functions
-var Users = require('./users'),
-    Stats = require('./stats'),
-    Tweets = require('./tweets');
+var Users = require('./lib/users'),
+    Stats = require('./lib/stats'),
+    Tweets = require('./lib/tweets');
 
 // database
-//TODO: choose database
+var mongoose = require('mongoose');
 
 // express app
 var app = express();
 
 // set up database
-//TODO: choose database
+mongoose.connect('mongodb://localhost/3');
 
 // use redis or fakeredis, depending on envronment
 var client;
