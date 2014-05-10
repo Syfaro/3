@@ -10,6 +10,8 @@ var routes = express.Router();
 
 var tweetHelper = require('../lib/tweets');
 
+var Progress = require('../models/progress');
+
 routes.get('/', function (req, res) {
     if (req.isAuthenticated()) {
         return res.redirect('/3');
@@ -25,48 +27,70 @@ routes.get('/3', isAuthenticated, function (req, res) {
 });
 
 routes.get('/start', isAuthenticated, function (req, res) {
-    req.session.twits = {
-        complete: false,
-        status: 'Starting'
-    };
+    res.json('Started');
 
-    req.session.save();
-
-    res.json(req.session.twits);
-
-    tweetHelper.getAllTweets(req.twit, req.user.twitter_handle, function (count) {
-        req.session.twits = {
-            complete: false,
-            message: 'Loading!',
-            count: count
-        };
-
-        req.session.save();
-    }, function (err, tweets) {
-        if (err) {
-            console.error(err);
-            req.session.twits = {
-                complete: false,
-                error: true,
-                status: 'Error!'
-            };
-            return req.session.save();
+    Progress.findOne({
+        twitter_handle: req.user.twitter_handle,
+        owner_id: req.user._id
+    }, function (err, progress) {
+        if (!progress) {
+            progress = new Progress({
+                twitter_handle: req.user.twitter_handle,
+                loading: true,
+                owner_id: req.user._id
+            });
+        } else {
+            progress.loading = true;
         }
 
-        var stats = tweetHelper.handleTweets(tweets);
+        progress.save(function (err) {
+            if (err) {
+                console.error(err);
+                return;
+            }
 
-        req.session.twits = {
-            complete: true,
-            status: 'Done!',
-            stats: stats
-        };
+            tweetHelper.getAllTweets(req.twit, req.user.twitter_handle, function (count) {
+                Progress.findOne({
+                    twitter_handle: req.user.twitter_handle,
+                    owner_id: req.user._id
+                }, function (err, progress) {
+                    progress.gotten = count;
 
-        req.session.save();
+                    progress.save();
+                });
+            }, function (err, tweets) {
+                if (err) {
+                    return console.error(err);
+                }
+
+                var stats = tweetHelper.handleTweets(tweets);
+
+                Progress.findOne({
+                    twitter_handle: req.user.twitter_handle,
+                    owner_id: req.user._id
+                }, function (err, progress) {
+                    progress.gotten = stats.total;
+                    progress.contains = stats.count;
+                    progress.loading = false;
+
+                    progress.save();
+                });
+            });
+        });
     });
 });
 
 routes.get('/status', isAuthenticated, function (req, res) {
-    res.json(req.session.twits);
+    Progress.findOne({
+        owner_id: req.user._id,
+        twitter_handle: req.user.twitter_handle
+    }, function (err, progress) {
+        if (err) {
+            return res.json(err);
+        }
+
+        res.json(progress);
+    });
 });
 
 routes.get('/logout', isAuthenticated, function (req, res) {
