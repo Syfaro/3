@@ -89,7 +89,7 @@ block body
     script.
         var updateProgress = function () {
             makeRequest(statusPath, function (err, status) {
-                if (err) {
+                if (err || status.error) {
                     clearInterval(interval);
                     console.error(err);
                     alert('Something broke!');

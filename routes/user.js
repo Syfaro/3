@@ -70,6 +70,9 @@ routes.get('/start/:username', isAuthenticated, function (req, res) {
                 });
             }, function (err, tweets) {
                 if (err) {
+                    progress.error = err;
+                    progress.save();
+
                     return console.error(err);
                 }
 
