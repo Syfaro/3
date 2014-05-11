@@ -54,6 +54,6 @@ block body
             var ctx = document.getElementById('graph').getContext('2d');
             new Chart(ctx).Bar(data);
         };
-        makeGraph();
 
+        makeGraph();
         window.addEventListener('resize', makeGraph);
