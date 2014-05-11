@@ -8,6 +8,8 @@ var StatSchema = new mongoose.Schema({
     twitter_handle: String,
     total_tweets: Number,
     contains: Number
+}, {
+    collection: 'leaderboard'
 });
 
 StatSchema.virtual('percent').get(function () {
